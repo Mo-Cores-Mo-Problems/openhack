@@ -7,10 +7,10 @@ name: Trips_CI
 on:
   push:
     branches: [ master ]
-    paths: [ apis/trips/**, .github/workflows/trips-action.xml ]
+    paths: [ apis/trips/**, .github/workflows/trips-action.yml ]
   pull_request:
     branches: [ master ]
-    paths: [ apis/trips/**, .github/workflows/trips-action.xml ]
+    paths: [ apis/trips/**, .github/workflows/trips-action.yml ]
 
 defaults: 
   run:  
