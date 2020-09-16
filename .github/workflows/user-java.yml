@@ -17,6 +17,9 @@ defaults:
   run:  
     working-directory: apis/user-java
 
+env:
+  build_name: "user-java_build"
+
 jobs:
   # This workflow contains a single job called "build"
   build:
