@@ -3,7 +3,7 @@
 name: user-java-CD
 
 env:
-  ACRNAME: openhackvs44eql7acr
+  ACRNAME: openhackvs44eql7acr.azurecr.io
   ACRREPO: devopsoh/api-user-java
   
   
