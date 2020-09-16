@@ -32,11 +32,11 @@ jobs:
       with:
         dotnet-version: 2.1
     - name: Install dependencies
-      run: dotnet restore apis/poi/poi.sln
+      run: dotnet restore poi.sln
     - name: Build
-      run: dotnet build apis/poi/poi.sln --configuration Release --no-restore
+      run: dotnet build poi.sln --configuration Release --no-restore
     - name: Test
-      run: dotnet test apis/poi/poi.sln --no-restore --verbosity normal
+      run: dotnet test poi.sln --no-restore --verbosity normal
 
     - name: Create Issue on Error
       if: ${{ failure() }}
