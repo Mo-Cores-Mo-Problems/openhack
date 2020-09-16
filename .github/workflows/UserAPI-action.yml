@@ -6,7 +6,7 @@ name: User Profile API CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches: [ '!master' ]
     paths: [ apis/userprofile/**, .github/workflows/UserAPI-action.yml ] 
   pull_request:
     branches: [ master ]
