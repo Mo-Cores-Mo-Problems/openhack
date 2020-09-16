@@ -4,7 +4,7 @@ name: user-java-CD
 
 
 env:
-  ACRNAME: openhackvs44eql7acr.azurecr.io
+  ACRNAME: openhackvs44eql7acr
   ACRREPO: devopsoh/api-user-java  
   
 # Controls when the action will run. Triggers the workflow on push or pull request
@@ -33,7 +33,7 @@ jobs:
       with:
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
-        login-server: openhackvs44eql7acr.azurecr.io
+        login-server: ${{ env.ACRNAME }}
       
     - name: Build the Docker image
       run: |
