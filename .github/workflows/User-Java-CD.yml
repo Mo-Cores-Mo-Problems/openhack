@@ -1,0 +1,37 @@
+# This is a basic workflow to help you get started with Actions
+
+name: user-java-CD
+
+
+env:
+  ACRNAME: openhackvs44eql7acr.azurecr.io
+  ACRREPO: devopsoh/api-user-java
+  BASEIMAGETAG: ${{ACRNAME}/${{ACRREPO}}:${{github.run_id}}
+  
+  
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+    paths:  apis/user-java/**
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+defaults: 
+  run:  
+    working-directory: apis/user-java
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run:
+        echo "Building API-USER-JAVA image..."
+        echo "Changing directory to apis/user-java..."
+        cd apis/user-java
+        az acr build --image "devopsoh/api-user-java:${{github.run_id}}" --registry ${{env.ACRNAME}} --file Dockerfile .
