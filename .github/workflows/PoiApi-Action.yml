@@ -7,11 +7,15 @@ name: POI_CI
 on:
   push:
     branches: [ master ]
-    paths: apis/poi/**
+    paths: [ apis/poi/**, .github/workflows/PoiApi-Action.yml ]
   pull_request:
     branches: [ master ]
-    paths: apis/poi/**
+    paths: [ apis/poi/**, .github/workflows/PoiApi-Action.yml ]
 
+defaults:
+  run:
+    working-directory: apis/poi
+    
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
