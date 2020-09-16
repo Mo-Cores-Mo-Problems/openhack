@@ -7,10 +7,10 @@ name: User Profile API CI
 on:
   push:
     branches: [ master ]
-    paths: [ apis/userprofile/**, .github/workflows/UserAPI-action.xml ] 
+    paths: [ apis/userprofile/**, .github/workflows/UserAPI-action.yml ] 
   pull_request:
     branches: [ master ]
-    paths: [ apis/userprofile/**, .github/workflows/UserAPI-action.xml ] 
+    paths: [ apis/userprofile/**, .github/workflows/UserAPI-action.yml ] 
 
 defaults:
   run:
