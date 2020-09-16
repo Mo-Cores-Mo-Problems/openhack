@@ -7,10 +7,17 @@ name: POI_CI
 on:
   push:
     branches: [ master ]
-    paths: apis/poi/**
+    paths: [ apis/poi/**, .github/workflows/PoiApi-Action.yml ]
   pull_request:
     branches: [ master ]
-    paths: apis/poi/**
+    paths: [ apis/poi/**, .github/workflows/PoiApi-Action.yml ]
+
+defaults:
+  run:
+    working-directory: apis/poi
+    
+env:
+  build_name: "POI_Build"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -28,8 +35,21 @@ jobs:
       with:
         dotnet-version: 2.1
     - name: Install dependencies
-      run: dotnet restore apis/poi/poi.sln
+      run: dotnet restore poi.sln
     - name: Build
-      run: dotnet build apis/poi/poi.sln --configuration Release --no-restore
+      run: dotnet build poi.sln --configuration Release --no-restore
     - name: Test
-      run: dotnet test apis/poi/poi.sln --no-restore --verbosity normal
+      run: dotnet test poi.sln --no-restore --verbosity normal
+
+    - name: Create Issue on Error
+      if: ${{ failure() }}
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title:  "${{ env.build_name }} Build Failed: ${{ context.github.workflow }}",
+            body: "Build Run Failed: ${{ context.github.run_number }} click here for logs https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          })
