@@ -6,6 +6,7 @@ env:
   ACRNAME: openhackvs44eql7acr
   ACRREPO: devopsoh/api-user-java
   
+  
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
@@ -33,7 +34,7 @@ jobs:
         login-server: ${{ env.ACRNAME }}
       
     - name: Build the Docker image
-      run: docker build --tag ${{ env.ACRREPO }}:${{ github.run_id }} ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }} .
+      run: docker build --tag ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }} .
       
     - name: Docker push
       run: docker push ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }}
