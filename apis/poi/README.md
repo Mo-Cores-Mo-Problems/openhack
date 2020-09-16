@@ -1,7 +1,7 @@
 
 # POI Service
 
-Change README in POI API
+Change README in POI API. Final check (I hope).
 
 ## Overview
 
