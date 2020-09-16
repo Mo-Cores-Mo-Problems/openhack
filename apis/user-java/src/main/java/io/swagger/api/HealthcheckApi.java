@@ -29,7 +29,7 @@ public interface HealthcheckApi {
 
     @ApiOperation(value = "", nickname = "healthcheckUserGet", notes = "Returns healthcheck for systems looking to ensure API is up and operational", response = Healthcheck.class, tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Service is healthy", response = Healthcheck.class),
+        @ApiResponse(code = 200, message = "Service is healthy - challenge 4 complete", response = Healthcheck.class),
         @ApiResponse(code = 200, message = "An error occurred", response = ErrorResponseDefault.class) })
     @RequestMapping(value = "/healthcheck/user-java",
         produces = { "application/json" }, 
