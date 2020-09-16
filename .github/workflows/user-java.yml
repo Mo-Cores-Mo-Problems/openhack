@@ -17,6 +17,9 @@ defaults:
   run:  
     working-directory: apis/user-java
 
+env:
+  build_name: "user-java_build"
+
 jobs:
   # This workflow contains a single job called "build"
   build:
@@ -30,7 +33,17 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
     - name: Test
       run: mvn test
+    - name: Create Issue on Error
+      if: ${{ failure() }}
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title:  "${{ env.build_name }} Build Failed: ${{ github.workflow }}",
+            body: "Build Run Failed: ${{ github.run_number }} click here for logs https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          })
