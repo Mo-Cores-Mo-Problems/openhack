@@ -1,7 +1,7 @@
 
 # POI Service
 
-Change README in POI API. Final check (I hope).
+This is the best service.
 
 ## Overview
 
