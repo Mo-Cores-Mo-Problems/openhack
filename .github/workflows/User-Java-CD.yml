@@ -6,7 +6,7 @@ name: user-java-CD
 env:
   ACRNAME: openhackvs44eql7acr.azurecr.io
   ACRREPO: devopsoh/api-user-java
-  BASEIMAGETAG: ${{ACRNAME}/${{ACRREPO}}:${{github.run_id}}
+  BASEIMAGETAG: ${{ACRNAME}}/${{ACRREPO}}:${{github.run_id}}
   
   
 # Controls when the action will run. Triggers the workflow on push or pull request
