@@ -16,8 +16,8 @@ defaults:
   run:
     working-directory: apis/userprofile
 
-  env:
-    build_name: "User Profile API CI"
+env:
+  build_name: "User Profile API CI"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
