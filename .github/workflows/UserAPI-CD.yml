@@ -47,10 +47,10 @@ jobs:
     steps:   
     - name: Azure Login
       uses: Azure/login@v1
-      creds: $ {{ secrets.AZ_CREDS }}
+      creds: ${{ secrets.AZ_CREDS }}
       
     - name: Deploy to Azure Web App [Staging]
       uses: azure/webapps-deploy@v2
-        app-name: $ {{ env.APPNAME }}
+        app-name: ${{ env.APPNAME }}
         slot-name: staging # optional, default is production
         images: ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }}
