@@ -4,3 +4,4 @@ coverage
 reports
 reports-tmp
 node_modules
+.vscode
