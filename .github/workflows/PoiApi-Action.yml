@@ -50,6 +50,6 @@ jobs:
           github.issues.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            title:  "${{ env.build_name }} Build Failed: ${{ context.github.workflow }}",
-            body: "Build Run Failed: ${{ context.github.run_number }} click here for logs https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            title:  "${{ env.build_name }} Build Failed: ${{ github.workflow }}",
+            body: "Build Run Failed: ${{ github.run_number }} click here for logs https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           })
