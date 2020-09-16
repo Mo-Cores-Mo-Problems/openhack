@@ -11,7 +11,7 @@ var Parser = require('swagger-parser');
  * Test for /user
  */
 Test('/user', function (t) {
-    var apiPath = Path.resolve(__dirname, '../config/swagger.json.WRONG');
+    var apiPath = Path.resolve(__dirname, '../config/swagger.json');
     var App = Express();
     App.use(BodyParser.json());
     App.use(BodyParser.urlencoded({
