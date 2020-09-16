@@ -37,3 +37,11 @@ jobs:
       run: dotnet build apis/poi/poi.sln --configuration Release --no-restore
     - name: Test
       run: dotnet test apis/poi/poi.sln --no-restore --verbosity normal
+
+    - name: Create Issue on Error
+      if: ${{ failure() }}
+      uses: actions/github-script@v3
+      id: set-result
+      with:
+        script: return "Hello!"
+        result-encoding: string
