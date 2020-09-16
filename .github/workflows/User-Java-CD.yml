@@ -27,8 +27,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Azure Container Registry Login
+      uses: Azure/docker-login@v1
+      with:
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+        login-server: openhackvs44eql7acr.azurecr.io
+      
     - name: Build the Docker image
-      run:
+      run: |
         echo "Building API-USER-JAVA image..."
         echo "Changing directory to apis/user-java..."
         cd apis/user-java
