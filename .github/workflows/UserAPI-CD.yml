@@ -4,7 +4,8 @@ name: User Profile API CD
 
 env:
   ACRNAME: openhackvs44eql7acr.azurecr.io
-  ACRREPO: devopsoh/api-user-java
+  ACRREPO: devopsoh/api-userprofile
+  APPNAME: openhackvs44eql7userprofile
   
   
 # Controls when the action will run. Triggers the workflow on push or pull request
@@ -20,7 +21,7 @@ defaults:
     working-directory: apis/userprofile
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,3 +39,18 @@ jobs:
       
     - name: Docker push
       run: docker push ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }}
+
+  deploy-to-staging:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:   
+    - name: Azure Login
+      uses: Azure/login@v1
+      creds: ${{ secrets.AZ_CREDS }}
+      
+    - name: Deploy to Azure Web App [Staging]
+      uses: azure/webapps-deploy@v2
+        app-name: ${{ env.APPNAME }}
+        slot-name: staging # optional, default is production
+        images: ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }}
