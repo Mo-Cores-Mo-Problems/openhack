@@ -2,10 +2,9 @@
 
 name: user-java-CD
 
-
 env:
   ACRNAME: openhackvs44eql7acr
-  ACRREPO: devopsoh/api-user-java  
+  ACRREPO: devopsoh/api-user-java
   
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -20,9 +19,7 @@ defaults:
     working-directory: apis/user-java
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -36,6 +33,7 @@ jobs:
         login-server: ${{ env.ACRNAME }}
       
     - name: Build the Docker image
-      run: |
-        echo "Building API-USER-JAVA image..."
-        az acr build --image "devopsoh/api-user-java:${{github.run_id}}" --registry ${{env.ACRNAME}} --file Dockerfile .
+      run: docker build --tag ${{ env.ACRREPO }}:${{ github.run_id }} ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }} .
+      
+    - name: Docker push
+      run: docker push ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }}
