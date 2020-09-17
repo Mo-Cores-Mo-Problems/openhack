@@ -171,16 +171,20 @@ jobs:
           })
 
 
-  stop_slots:
+  stop_staging_slots:
     if: ${{ success() }}
     needs: [validate_production]
     runs-on: ubuntu-latest
     steps:  
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZ_CREDS }}
-      - name: Stop staging
-        run: |
-          echo Stop staging...
-          az webapp stop --slot staging --resource-group openhackvs44eql7rg
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZ_CREDS }}
+
+    - name: Stop staging slots
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          az webapp stop --name $APPNAME --slot staging --resource-group openhackvs44eql7rg
+          
