@@ -24,7 +24,6 @@ defaults:
 jobs:
   
   build_push:
-    if: "false"
     runs-on: ubuntu-latest
 
     steps:
@@ -44,7 +43,6 @@ jobs:
       run: docker push ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }}
       
   deploy_azure:
-    if: "false"
     needs: [build_push]
     runs-on: ubuntu-latest
 
@@ -62,7 +60,6 @@ jobs:
         images: ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }}
 
   validate_staging:
-    if: "false"
     needs: [deploy_azure]
     runs-on: ubuntu-latest
 
@@ -91,7 +88,6 @@ jobs:
           done
 
   swap_slots:
-    if: "false"
     needs: [validate_staging]
     runs-on: ubuntu-latest
     steps:
@@ -113,7 +109,7 @@ jobs:
           az webapp deployment slot swap  -g openhackvs44eql7rg -n openhackvs44eql7userjava --slot staging --target-slot production
 
   validate_production:
-    #needs: [swap_slots]
+    needs: [swap_slots]
     runs-on: ubuntu-latest
 
     steps:
@@ -124,7 +120,7 @@ jobs:
       - name: Validate Production
         run: |
           echo "Checking endpoint"
-          while [ true ]; do
+          for i in {1..5}; do
              result=`curl -s -o /dev/null -w "%{http_code}" $HEALTHCHECK_PRODUCTION`
              if [ -z $result ]; then
                 echo "Status from healthcheck endpoint is empty!"
@@ -139,3 +135,37 @@ jobs:
                 sleep 5
              fi
           done
+
+  rollback_slots:
+    if: ${{ failure() }}
+    needs: [validate_production]
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZ_CREDS }}
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Azure CLI script file
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          az account show
+          az webapp deployment slot swap  -g openhackvs44eql7rg -n openhackvs44eql7userjava --slot production --target-slot staging
+    
+    - name: Create Issue on Error
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title:  "${{ env.build_name }} Build Failed: ${{ github.workflow }}",
+            body: "Build Run Failed: ${{ github.run_number }} click here for logs https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          })
