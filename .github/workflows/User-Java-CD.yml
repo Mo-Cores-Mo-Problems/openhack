@@ -156,7 +156,7 @@ jobs:
         azcliversion: 2.0.72
         inlineScript: |
           az account show
-          az webapp deployment slot swap  -g openhackvs44eql7rg -n openhackvs44eql7userjava --slot production --target-slot staging
+          az webapp deployment slot swap -g openhackvs44eql7rg -n openhackvs44eql7userjava --slot production --target-slot staging
     
     - name: Create Issue on Error
       uses: actions/github-script@v3
@@ -169,3 +169,18 @@ jobs:
             title:  "${{ env.build_name }} Build Failed: ${{ github.workflow }}",
             body: "Build Run Failed: ${{ github.run_number }} click here for logs https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           })
+
+
+  stop_slots:
+    if: ${{ success() }}
+    needs: [validate_production]
+    runs-on: ubuntu-latest
+    steps:  
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZ_CREDS }}
+      - name: Stop staging
+        run: |
+          echo Stop staging...
+          az webapp stop --slot staging --resource-group openhackvs44eql7rg
