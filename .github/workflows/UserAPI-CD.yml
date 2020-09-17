@@ -6,6 +6,7 @@ env:
   ACRNAME: openhackvs44eql7acr.azurecr.io
   ACRREPO: devopsoh/api-userprofile
   APPNAME: openhackvs44eql7userprofile
+  RESOURCE_GROUP: openhackvs44eql7rg
   HEALTHCHECK_STAGING: https://openhackvs44eql7userprofile-staging.azurewebsites.net/api/healthcheck/user
   
 # Controls when the action will run. Triggers the workflow on push or pull request
@@ -106,3 +107,4 @@ jobs:
         azcliversion: 2.0.72
         inlineScript: |
           az account show
+          az webapp deployment slot swap -g $RESOURCE_GROUP -n $APPNAME --slot staging --target-slot production
