@@ -58,8 +58,8 @@ jobs:
         slot-name: staging
         images: ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }}
 
-  build:
-
+  health_check:
+    needs: [deploy_azure]
     runs-on: ubuntu-latest
 
     steps:
