@@ -105,3 +105,4 @@ jobs:
         azcliversion: 2.0.72
         inlineScript: |
           az account show
+          az webapp deployment slot swap  -g openhackvs44eql7rg -n openhackvs44eql7userjava --slot staging --target-slot production
