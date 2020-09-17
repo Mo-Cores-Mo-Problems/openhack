@@ -59,6 +59,7 @@ jobs:
         
   
   health-check:
+    needs: deploy-to-staging
     runs-on: ubuntu-latest
 
     steps:
