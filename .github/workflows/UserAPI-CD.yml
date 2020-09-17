@@ -6,7 +6,7 @@ env:
   ACRNAME: openhackvs44eql7acr.azurecr.io
   ACRREPO: devopsoh/api-userprofile
   APPNAME: openhackvs44eql7userprofile
-  HEALTHCHECK_STAGING: "https://openhackvs44eql7userprofile-staging.azurewebsites.net/api/healthcheck/user"
+  HEALTHCHECK_STAGING: https://openhackvs44eql7userprofile-staging.azurewebsites.net/api/healthcheck/user
   
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -66,11 +66,10 @@ jobs:
     - name: Check HealthCheck Status
       run: |
         echo "Checking endpoint"
-        declare url=${{ env.HEALTHCHECK_STAGING }}
-        # result=$(curl -w "%{http_code}" -i $url 2>/dev/null | grep HTTP/1.1)
-        result=$(curl --write-out '%{http_code}' --silent --output /dev/null $url)
+        #declare url=$HEALTHCHECK_STAGING
+        result=$(curl --write-out '%{http_code}' --silent --output /dev/null $HEALTHCHECK_STAGING)
         sleep 5
-        result=$(curl --write-out '%{http_code}' --silent --output /dev/null $url)
+        result=$(curl --write-out '%{http_code}' --silent --output /dev/null $HEALTHCHECK_STAGING)
         echo $result
         for i in {1..5}
         do
