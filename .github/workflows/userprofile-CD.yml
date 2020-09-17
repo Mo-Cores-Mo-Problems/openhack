@@ -50,3 +50,4 @@ jobs:
           done
           exit 1
         id: health-check
+        

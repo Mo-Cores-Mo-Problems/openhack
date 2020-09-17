@@ -90,4 +90,3 @@ jobs:
           exit 1
         # Put this in to ensure the script has the right endline :(
         id: health-check
-        
