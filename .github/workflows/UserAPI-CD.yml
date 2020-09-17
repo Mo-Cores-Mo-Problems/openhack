@@ -11,6 +11,7 @@ env:
   PRODURL: https://openhackvs44eql7userprofile
   STAGINGURL: $PRODURL-staging
   HEALTHCHECK_API: /api/healthcheck/user
+  HEALTHCHECK_PRODUCTION: https://openhackvs44eql7userprofile.azurewebsites.net/api/healthcheck/user
   
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -132,15 +133,15 @@ jobs:
       - name: Validate Production
         run: |
           echo "Checking endpoint"
-          while [ true ]; do
-             result=`curl -s -o /dev/null -w "%{http_code}" $PRODURL$HEALTHCHECK_API`
+          for i in {1..5}; do
+             result=`curl -s -o /dev/null -w "%{http_code}" $HEALTHCHECK_PRODUCTION`
              if [ -z $result ]; then
                 echo "Status from healthcheck endpoint is empty!"
                 exit 1
              fi
              echo "Status from healthcheck endpoint : $result"
              if [ $result == "200" ]; then
-                echo "Web service in staging seems to be running OK!"
+                echo "Web service in production seems to be running OK!"
                 break
              else
                 echo "Web service is not ready, sleeping 5 seconds ..."
