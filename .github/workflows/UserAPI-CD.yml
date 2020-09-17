@@ -62,37 +62,22 @@ jobs:
     needs: deploy-to-staging
     runs-on: ubuntu-latest
     steps:
-    - name: Check HealthCheck Status
-      run: |
-        echo "Checking endpoint"
-        result=`curl --write-out "%{http_code}" --silent --output /dev/null $HEALTHCHECK_STAGING`
-        echo $result
-        sleep 5
-        result=`curl --write-out "%{http_code}" --silent --output /dev/null $HEALTHCHECK_STAGING`
-        echo $result
-        for i in {1..5}
-        do
-            echo "Trying $i"
-            if [ $result -eq 200 ] 
-            then
-                echo "Yay"
-                exit 0
-            else
-                sleep 10
-            fi
-        done
-        exit 1
-        
-    - name: Create Issue on Error
-      if: ${{ failure() }}
-      uses: actions/github-script@v3
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          github.issues.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            title:  "${{ env.build_name }} Build Failed: ${{ github.workflow }}",
-            body: "Build Run Failed: ${{ github.run_number }} click here for logs https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          })
+    # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
+          
+      - name: Create Issue on Error
+        if: ${{ failure() }}
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title:  "${{ env.build_name }} Build Failed: ${{ github.workflow }}",
+              body: "Build Run Failed: ${{ github.run_number }} click here for logs https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            })
 
