@@ -66,6 +66,23 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo "Checking endpoint"
+          result=`curl --write-out "%{http_code}" --silent --output /dev/null $HEALTHCHECK_STAGING`
+          sleep 5
+          result=`curl --write-out "%{http_code}" --silent --output /dev/null $HEALTHCHECK_STAGING`
+          echo $result
+          for i in {1..5}
+          do
+              echo "Trying $i"
+              if [ $result -eq 200 ] 
+              then
+                  echo "Yay"
+                  exit 0
+              else
+                  sleep 10
+              fi
+          done
+          exit 1
