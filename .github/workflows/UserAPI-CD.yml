@@ -59,9 +59,35 @@ jobs:
         slot-name: staging # optional, default is production
         images: ${{ env.ACRNAME }}/${{ env.ACRREPO }}:${{ github.run_id }}
 
-  buildcheck:
+  validate-staging:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    needs: [ deploy-to-staging ]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: "echo Hello, world!"
+      
+
+      # Runs a set of commands using the runners shell
+      - name: Run Health Check (Staging)
+        run: |
+          echo "Checking endpoint"
+          result=`curl --write-out "%{http_code}" --silent --output /dev/null $HEALTHCHECK_STAGING`
+          sleep 5
+          result=`curl --write-out "%{http_code}" --silent --output /dev/null $HEALTHCHECK_STAGING`
+          echo $result
+          for i in {1..5}
+          do
+              echo "Trying $i"
+              if [ $result -eq 200 ] 
+              then
+                  echo "Yay"
+                  exit 0
+              else
+                  sleep 10
+              fi
+          done
+          exit 1
+        # Put this in to ensure the script has the right endline :(
+        id: health-check
+        

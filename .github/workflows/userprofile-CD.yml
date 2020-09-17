@@ -23,17 +23,14 @@ defaults:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  health-check:
+  validate-staging:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Run Health Check (Staging)
         run: |
           echo "Checking endpoint"
           result=`curl --write-out "%{http_code}" --silent --output /dev/null $HEALTHCHECK_STAGING`
@@ -52,3 +49,4 @@ jobs:
               fi
           done
           exit 1
+        id: health-check
