@@ -145,3 +145,37 @@ jobs:
                 sleep 5
              fi
           done
+
+  roll-back-on-failure:
+    needs: [ validate-production ]
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZ_CREDS }}
+
+    # - name: Checkout
+    #   uses: actions/checkout@v1
+
+    - name: Roll-back
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          az account show
+          az webapp deployment slot swap -g $RESOURCE_GROUP -n $APPNAME --slot staging --target-slot production
+
+    - name: Create Issue on Error
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title:  "${{ env.build_name }} Failed: ${{ github.run_id }}",
+            body: "Build Run Failed: ${{ github.run_number }} click here for logs https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          })
