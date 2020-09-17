@@ -16,7 +16,7 @@ module.exports = {
         200: function (req, res, callback) {
             res.json({
                 message: 'healthcheck',
-                status: 'healthy. TSI Get!'
+                status: 'healthy. TSI Get! with Staging Slot shutdown.'
             });
             callback;
         },
