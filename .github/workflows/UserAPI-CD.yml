@@ -64,7 +64,7 @@ jobs:
     steps:
     - name: Check HealthCheck Status
       run: |
-        echo "Checking endpoint"       
+        echo "Checking endpoint"
         result=`curl --write-out "%{http_code}" --silent --output /dev/null $HEALTHCHECK_STAGING`
         echo $result
         sleep 5
