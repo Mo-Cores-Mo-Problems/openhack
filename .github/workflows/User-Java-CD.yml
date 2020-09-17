@@ -85,3 +85,23 @@ jobs:
                 sleep 5
              fi
           done
+
+  build-and-deploy:
+    needs: [validate_staging]
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZ_CREDS }}
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Azure CLI script file
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          az account show
