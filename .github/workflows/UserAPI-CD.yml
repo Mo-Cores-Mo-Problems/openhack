@@ -66,10 +66,11 @@ jobs:
     - name: Check HealthCheck Status
       run: |
         echo "Checking endpoint"
-        #declare url=$HEALTHCHECK_STAGING
-        result=$(curl --write-out '%{http_code}' --silent --output /dev/null $HEALTHCHECK_STAGING)
+       
+        result=`curl --write-out "%{http_code}" --silent --output /dev/null $HEALTHCHECK_STAGING`
+        echo $result
         sleep 5
-        result=$(curl --write-out '%{http_code}' --silent --output /dev/null $HEALTHCHECK_STAGING)
+        result=`curl --write-out "%{http_code}" --silent --output /dev/null $HEALTHCHECK_STAGING`
         echo $result
         for i in {1..5}
         do
