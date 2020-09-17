@@ -177,3 +177,20 @@ jobs:
             title:  "${{ env.build_name }} Failed: ${{ github.run_id }}",
             body: "Build Run Failed: ${{ github.run_number }} click here for logs https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           })
+  
+  stop-staging-slots:
+    needs: [validate-prod]
+    if: ${{ success() }}
+    runs-on: ubuntu-latest
+    steps:  
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZ_CREDS }}
+
+    - name: Stop staging slots
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          az webapp stop --name $APPNAME --slot staging -g $RESOURCE_GROUP
