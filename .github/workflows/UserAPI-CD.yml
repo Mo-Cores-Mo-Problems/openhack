@@ -6,12 +6,7 @@ env:
   ACRNAME: openhackvs44eql7acr.azurecr.io
   ACRREPO: devopsoh/api-userprofile
   APPNAME: openhackvs44eql7userprofile
-  RESOURCE_GROUP: openhackvs44eql7rg
   HEALTHCHECK_STAGING: https://openhackvs44eql7userprofile-staging.azurewebsites.net/api/healthcheck/user
-  PRODURL: https://openhackvs44eql7userprofile
-  STAGINGURL: $PRODURL-staging
-  HEALTHCHECK_API: /api/healthcheck/user
-  HEALTHCHECK_PRODUCTION: https://openhackvs44eql7userprofile.azurewebsites.net/api/healthcheck/user
   
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -66,21 +61,20 @@ jobs:
 
   validate-staging:
     # The type of runner that the job will run on
-    # if: "false"
     runs-on: ubuntu-latest
-    # needs: [ deploy-to-staging ]
+    #needs: [ deploy-to-staging ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      # - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       # Runs a set of commands using the runners shell
       - name: Validate Staging
         run: |
           echo "Checking endpoint"
           while [ true ]; do
-             result=`curl -s -o /dev/null -w "%{http_code}" $STAGINGURL$HEALTHCHECK_API`
+             result=`curl -s -o /dev/null -w "%{http_code}" $HEALTHCHECK_STAGING`
              if [ -z $result ]; then
                 echo "Status from healthcheck endpoint is empty!"
                 exit 1
@@ -94,94 +88,3 @@ jobs:
                 sleep 5
              fi
           done
-
-
-  swap-staging-to-production:
-    if: "false"
-    needs: [validate-staging]
-    runs-on: ubuntu-latest
-    steps:
-    
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZ_CREDS }}
-
-    # - name: Checkout
-    #   uses: actions/checkout@v1
-
-    - name: Azure CLI script file
-      uses: azure/CLI@v1
-      with:
-        azcliversion: 2.0.72
-        inlineScript: |
-          az account show
-          az webapp deployment slot swap -g $RESOURCE_GROUP -n $APPNAME --slot staging --target-slot production
-
-
-  validate-production:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    # needs: [ swap-staging-to-production ]
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      # - uses: actions/checkout@v2
-
-      # Runs a set of commands using the runners shell
-      - name: Validate Production
-        run: |
-          echo "Checking endpoint"
-          for i in {1..5}; do
-             result=`curl -s -o /dev/null -w "%{http_code}" $HEALTHCHECK_PRODUCTION`
-             if [ -z $result ]; then
-                echo "Status from healthcheck endpoint is empty!"
-                exit 1
-             fi
-             echo "Status from healthcheck endpoint : $result"
-             if [ $result == "200" ]; then
-                echo "Web service in production seems to be running OK!"
-                break
-             else
-                echo "Web service is not ready, sleeping 5 seconds ..."
-                sleep 5
-             fi
-          done
-
-
-  roll-back-on-failure:
-    needs: [ validate-production ]
-    if: ${{ failure() }}
-    runs-on: ubuntu-latest
-    steps:
-    
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZ_CREDS }}
-
-    # - name: Checkout
-    #   uses: actions/checkout@v1
-
-    - name: Roll-back
-      uses: azure/CLI@v1
-      with:
-        azcliversion: 2.0.72
-        inlineScript: |
-          az account show
-          az webapp deployment slot swap -g $RESOURCE_GROUP -n $APPNAME --slot staging --target-slot production
-
-    - name: Create Issue on Error
-      uses: actions/github-script@v3
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          github.issues.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            title:  "${{ env.build_name }} Failed: ${{ github.run_id }}",
-            body: "Build Run Failed: ${{ github.run_number }} click here for logs https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          })
-
-
